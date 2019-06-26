@@ -12,18 +12,19 @@ WORKDIR /usr/src/app
 
 # add and install requirements
 COPY ./requirements.txt /usr/src/app/requirements.txt
-RUN pip install -r requirements.txt
+RUN pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -r requirements.txt
 
 # add entrypoint.sh
 COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
-RUN chmod 777 /usr/src/app/entrypoint.sh
+RUN chmod +x /usr/src/app/entrypoint.sh
 
 # add app
 COPY . /usr/src/app
 
-RUN chmod 644 manage.py
-# CMD python manage.py run -h 0.0.0.0
 # run server
-ENTRYPOINT ["sh", "/usr/src/app"]
+RUN chmod 644 manage.py
+CMD python manage.py run -h 0.0.0.0
+# CMD ["/usr/src/app/entrypoint.sh"]
+# ENTRYPOINT ["sh", "/usr/src/app/entrypoint.sh"]
 
 

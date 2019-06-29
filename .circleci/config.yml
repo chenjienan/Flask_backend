@@ -3,6 +3,8 @@ jobs:
   build:
     docker:
       - image: circleci/python:3.7.2
+    environment:
+      DOCKER_HOST: 127.0.0.1:2375
     steps:
       - checkout
       - run:
@@ -14,7 +16,7 @@ jobs:
 
       - run:
           name: run service
-          command: sudo service docker start && docker-compose up -d
+          command: docker-compose up -d
 
       - run:
           name: unit tests & coding standard check

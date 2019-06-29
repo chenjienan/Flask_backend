@@ -22,8 +22,9 @@ RUN chmod +x /usr/src/app/entrypoint.sh
 COPY . /usr/src/app
 
 # run server
-RUN chmod 644 manage.py
-CMD python manage.py run -h 0.0.0.0
+# RUN chmod 644 manage.py
+# CMD python manage.py run -h 0.0.0.0
+CMD gunicorn -b 0.0.0.0:5000 manage:app
 # CMD ["/usr/src/app/entrypoint.sh"]
 # ENTRYPOINT ["sh", "/usr/src/app/entrypoint.sh"]
 

@@ -18,7 +18,9 @@ jobs:
     steps:
       - run:
           name: run service
-          command: docker-compose up -d --build
+          command: |
+            pwd
+            docker-compose up -d --build
 
       - run:
           name: unit tests & coding standard

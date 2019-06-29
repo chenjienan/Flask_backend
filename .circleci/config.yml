@@ -1,9 +1,8 @@
 version: 2
 jobs:
-  test:
+  build:
     docker:
       - image: circleci/classic:latest
-    working_directory: ~/repo # Default working directory, where your project will be cloned
     steps:
       - checkout
       - run:
@@ -12,6 +11,11 @@ jobs:
             curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
             chmod +x ~/docker-compose
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
+  test:
+    docker:
+      - image: circleci/classic:latest
+    working_directory: ~/repo
+    steps:
       - run:
           name: run service
           command: docker-compose up -d --build

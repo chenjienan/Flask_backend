@@ -1,40 +1,27 @@
-# version: 2
-# jobs:
-#   build:
-#     docker:
-#       - image: circleci/cci-demo-docker-primary:0.0.2
+version: 2
+jobs:
+  test:
+    docker:
+      - image: circleci/classic:latest
+    working_directory: ~/repo # Default working directory, where your project will be cloned
+    steps:
+      - checkout
+      - run:
+          name: Install Docker Compose
+          command: |
+            curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+      - run:
+          name: run service
+          command: docker-compose up -d --build
 
-#     steps:
-#       - checkout
-
-#       - run:
-#           name: Install Docker Compose
-#           command: |
-#             curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-#             chmod +x ~/docker-compose
-#             sudo mv ~/docker-compose /usr/local/bin/docker-compose
-
-version: 2   
-image: docker
-
-services:
-  - docker:dind
-
-environment:
-  DOCKER_COMPOSE_VERSION: 1.23.2
-
-before_install:
-  - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-  - chmod +x docker-compose
-  - sudo mv docker-compose /usr/local/bin
-
-before_script:
-  - docker-compose up -d --build
-
-script:
-  - docker-compose exec users python manage.py test
-  - docker-compose exec users flake8 project
-
-after_script:
-  - docker-compose down
+      - run:
+          name: unit tests & coding standard
+          command: |
+            docker-compose exec users python manage.py test
+            docker-compose exec users flake8 project
+          
+      - run:
+          name: stop service
+          command: docker-compose down

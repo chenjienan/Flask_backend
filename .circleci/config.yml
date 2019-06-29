@@ -4,7 +4,7 @@ jobs:
     docker:
       - image: circleci/python:3.7.2
     environment:
-      DOCKER_HOST: 127.0.0.1
+      DOCKER_HOST: 127.0.0.1:5000
     steps:
       - checkout
       - run:

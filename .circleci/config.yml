@@ -2,7 +2,9 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.7.2    
+      - image: circleci/python:3.7.2
+    environment:
+      DOCKER_HOST: 127.0.0.1
     steps:
       - checkout
       - run:
@@ -14,10 +16,7 @@ jobs:
 
       - run:
           name: run service
-          command: |
-            pwd
-            ls
-            docker-compose up -d --build
+          command: docker-compose up -d --build
 
       - run:
           name: unit tests & coding standard check

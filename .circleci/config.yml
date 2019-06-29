@@ -2,13 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.7.2
-    environment:
-      DOCKER_TLS_VERIFY: "1"
-      DOCKER_HOST: tcp://40.78.68.74:2376
-      DOCKER_CERT_PATH: C:\Users\Terence Machine\.docker\machine\machines\tc-docker
-      DOCKER_MACHINE_NAME: tc-docker
-      COMPOSE_CONVERT_WINDOWS_PATHS: "true"
+      - image: circleci/python:3.7.2    
     steps:
       - checkout
       - run:
@@ -20,7 +14,10 @@ jobs:
 
       - run:
           name: run service
-          command: docker-compose up -d --build
+          command: |
+            pwd
+            ls
+            docker-compose up -d --build
 
       - run:
           name: unit tests & coding standard check

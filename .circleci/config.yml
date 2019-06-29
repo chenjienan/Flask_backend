@@ -8,18 +8,16 @@ jobs:
       - run:
           name: Install Docker Compose
           command: |
-            curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            curl -L https://github.com/docker/compose/releases/download/1.23.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
             chmod +x ~/docker-compose
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
-            
-      - run:
-          name: run service
-          command: |
-            pwd
-            docker-compose up -d --build
 
       - run:
-          name: unit tests & coding standard
+          name: run service
+          command: docker-compose up -d --build
+
+      - run:
+          name: unit tests & coding standard check
           command: |
             docker-compose exec users python manage.py test
             docker-compose exec users flake8 project

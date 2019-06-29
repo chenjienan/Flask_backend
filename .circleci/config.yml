@@ -1,55 +1,40 @@
-# Python CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-python/ for more details
-#
-version: 2
-jobs:
-  build:
-    docker:
-      # specify the version you desire here
-      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
-      - image: circleci/python:3.7.2
+# version: 2
+# jobs:
+#   build:
+#     docker:
+#       - image: circleci/cci-demo-docker-primary:0.0.2
 
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
+#     steps:
+#       - checkout
 
-    working_directory: ~/repo
+#       - run:
+#           name: Install Docker Compose
+#           command: |
+#             curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+#             chmod +x ~/docker-compose
+#             sudo mv ~/docker-compose /usr/local/bin/docker-compose
 
-    steps:
-      - checkout
+version: 2   
+image: docker
 
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "requirements.txt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+services:
+  - docker:dind
 
-      - run:
-          name: install dependencies
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r requirements.txt
+environment:
+  DOCKER_COMPOSE_VERSION: 1.23.2
 
-      - save_cache:
-          paths:
-            - ./venv
-          key: v1-dependencies-{{ checksum "requirements.txt" }}
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
 
-      # run tests!
-      # this example uses Django's built-in test-runner
-      # other common Python testing frameworks include pytest and nose
-      # https://pytest.org
-      # https://nose.readthedocs.io
-      - run:
-          name: run tests
-          command: |
-            . venv/bin/activate
-            python manage.py test
+before_script:
+  - docker-compose up -d --build
 
-      - store_artifacts:
-          path: test-reports
-          destination: test-reports
+script:
+  - docker-compose exec users python manage.py test
+  - docker-compose exec users flake8 project
+
+after_script:
+  - docker-compose down

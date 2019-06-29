@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/classic:latest
+      - image: circleci/python:3.7.2
     steps:
       - checkout
       - run:
@@ -13,7 +13,7 @@ jobs:
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
   test:
     docker:
-      - image: circleci/classic:latest
+      - image: circleci/python:3.7.2
     working_directory: ~/repo
     steps:
       - run:
@@ -29,3 +29,15 @@ jobs:
       - run:
           name: stop service
           command: docker-compose down
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
